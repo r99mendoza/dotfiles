@@ -1,30 +1,33 @@
-local languages = {
-	"bash",
-	"cpp",
-	"gitignore",
-	"html",
-	"javascript",
-	"json",
-	"lua",
-	"markdown",
-	"make",
-	"python",
-	"ruby",
-	"tcl",
-	"toml",
-	"systemverilog",
-	"vim",
-	"vimdoc",
-	"yaml",
-}
 return {
 	"nvim-treesitter/nvim-treesitter",
 	lazy = false,
 	branch = "main",
 	build = ":TSUpdate",
+	init = function()
+		local languages = {
+			"bash",
+			"cpp",
+			"gitignore",
+			"html",
+			"json",
+			"lua",
+			"markdown",
+			"make",
+			"python",
+			"tcl",
+			"toml",
+			"systemverilog",
+			"yaml",
+		}
+		local already_installed = require("nvim-treesitter.config").get_installed()
+		local parsers_to_install = vim.iter(languages)
+			:filter(function(parser)
+				return not vim.tbl_contains(already_installed, parser)
+			end)
+			:totable()
+		require("nvim-treesitter").install(parsers_to_install)
+	end,
 	config = function()
-		require("nvim-treesitter").install(languages)
-
 		-- use bash parser for zsh files
 		vim.treesitter.language.register("bash", "zsh")
 
